@@ -3,3 +3,4 @@ numpy==2.2.2
 pandas==2.2.3
 tqdm==4.67.1
 plotly==plotly-6.0.0
+imageio==2.37.0
