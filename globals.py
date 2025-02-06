@@ -127,7 +127,7 @@ def shift_delt_t(radar_df: pd.DataFrame, delta_t: float = 0.06) -> pd.DataFrame:
 
 def radar_normalize(radar_df: pd.DataFrame) -> pd.DataFrame:
     """
-    leaves points whose likelihood is less than 0.7
+    leaves points whose likelihood is less than 0.5
 
     Parameters
     ----------
@@ -137,9 +137,9 @@ def radar_normalize(radar_df: pd.DataFrame) -> pd.DataFrame:
     Returns
     -------
     pd.DataFrame
-        radar_df in which all points have a probability greater than 0.7
+        radar_df in which all points have a probability greater than 0.5
     """
-    return radar_df[radar_df["QPDH0"] < 0.3]
+    return radar_df[radar_df["QPDH0"] < 0.5]
 
 
 # def plot_generator(frame_num : int, path_file : str, radar_path : str | None  = None, lidar_path : str | None = None, title_graph : str = None,
