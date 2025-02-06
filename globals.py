@@ -14,6 +14,11 @@ index_radar_data : int = 0  #0 to 100
 radar_df : pd.DataFrame = pd.read_csv(f"data/processed data/radar_data_{index_radar_data}.csv")
 radar_df : pd.DataFrame = radar_df[radar_df["QPDH0"] < 0.3]
 
+#consrant plot_generator
+color_radar_standart : str | list[float] | list[tuple[float]] = "green"
+figsize_standart : tuple[int] = (22, 10)
+x_lim_standart : list[int] = [-110, 110]
+y_lim_standart :list[int] = [-50, 50]
 
 
 def gradient(lidar_df : pd.DataFrame, contrast_cof : float = contrast_0_to_1, opacity_cof : float = opacity_0_to_1) -> list[float]:
@@ -95,9 +100,9 @@ def shift_delt_t(delta_t : float = 0.06) -> pd.DataFrame:
     return radar_df
 
 
-def standart_plot_generator(type_radar_lidar : {"radar", "lidar", "radar_lidar"}, frame_num : int, path_file : str, title_graph : str = None,
-                color_radar : str | list[float] | list[tuple[float]]= "green", color_lidar : str | list[float] | list[tuple[float]] = None, 
-                figsize_ : tuple[int] = (22, 10), x_lim : list[int] = [-110, 110], y_lim :list[int] = [-50, 50]) -> None:
+def plot_generator(type_radar_lidar : {"radar", "lidar", "radar_lidar"}, frame_num : int, path_file : str, title_graph : str = None,
+                color_radar : str | list[float] | list[tuple[float]] = color_radar_standart, color_lidar : str | list[float] | list[tuple[float]] = None, 
+                figsize_ : tuple[int] = figsize_standart, x_lim : list[int] = x_lim_standart, y_lim :list[int] = y_lim_standart) -> None:
     """
     Saves a plt file in which the radar or lidar points (maybe both). 
     The data is taken from processed data with the frame_num number and stored along the path_file path with the title_graph header. 
@@ -118,20 +123,20 @@ def standart_plot_generator(type_radar_lidar : {"radar", "lidar", "radar_lidar"}
     title_graph : str = None
         Title graph. Default is "Frame {title_graph}"
     
-    color_radar : str | list[float] | list[tuple[float]] = "green"
-        The color of the radar in RGB. The default is green
+    color_radar : str | list[float] | list[tuple[float]] = color_radar_standart
+        The color of the radar in RGB. The default is color_radar_standart
 
     color_lidar : str | list[float] | list[tuple[float]] = None
         Lidar color. By default, gradient(frame_lidar)
 
-    figsize_ : tuple[int] = (22, 10)
-        The dimensions of the plt. Default (22, 11)
+    figsize_ : tuple[int] = figsize_standart
+        The dimensions of the plt. Default figsize_standart
 
-    x_lim : list[int] = [-110, 110]
-        Dimensions on the x-axis. Default is [-110, 110]
+    x_lim : list[int] = x_lim_standart
+        Dimensions on the x-axis. Default is x_lim_standart
 
-    y_lim :list[int] = [-50, 50]
-        Dimensions on the y-axis. Default is [-50, 50]
+    y_lim :list[int] = y_lim_standart
+        Dimensions on the y-axis. Default is y_lim_standart
 
 
     Returns
