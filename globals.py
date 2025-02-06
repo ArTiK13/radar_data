@@ -5,7 +5,8 @@ import typing as tp
 import json
 
 
-#constant gradient
+
+#constant gradient_reflections
 contrast_0_to_1 : float = 0.5
 opacity_0_to_1 : float = 0.5 
 
@@ -21,7 +22,7 @@ x_lim_standart : list[int] = [-110, 110]
 y_lim_standart :list[int] = [-50, 50]
 
 
-def gradient(lidar_df : pd.DataFrame, contrast_cof : float = contrast_0_to_1, opacity_cof : float = opacity_0_to_1) -> list[float]:
+def gradient_reflections(lidar_df : pd.DataFrame, contrast_cof : float = contrast_0_to_1, opacity_cof : float = opacity_0_to_1) -> list[float]:
     """
     Converts the reflection lidar_df column to a gradient from 0 to 1.
 
@@ -145,7 +146,7 @@ def plot_generator(type_radar_lidar : {"radar", "lidar", "radar_lidar"}, frame_n
         Saves the file from the plt
     """
     
-    plt.figure(figsize_)
+    plt.figure(figsize = figsize_)
     plt.xlim(x_lim)
     plt.ylim(y_lim)
 
@@ -158,7 +159,7 @@ def plot_generator(type_radar_lidar : {"radar", "lidar", "radar_lidar"}, frame_n
     if(type_radar_lidar == "lidar" or type_radar_lidar == "radar_lidar"):
         frame_lidar : pd.DataFrame = pd.read_csv(f"data/processed data/lidar_data_{frame_num}.csv")
         if(color_lidar is None):
-            plt.scatter(frame_lidar["X, (m)"], frame_lidar["Y, (m)"], s=1, c=gradient(frame_lidar))
+            plt.scatter(frame_lidar["X, (m)"], frame_lidar["Y, (m)"], s=1, c=gradient_reflections(frame_lidar))
         else:
             plt.scatter(frame_lidar["X, (m)"], frame_lidar["Y, (m)"], s=1, c=color_lidar)
 
