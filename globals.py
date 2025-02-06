@@ -12,8 +12,6 @@ opacity_0_to_1 : float = 0.5
 
 #constant shift_delt_t
 index_radar_data : int = 0  #0 to 100
-radar_df : pd.DataFrame = pd.read_csv(f"data/processed data/radar_data_{index_radar_data}.csv")
-radar_df : pd.DataFrame = radar_df[radar_df["QPDH0"] < 0.3]
 
 #consrant plot_generator
 color_radar_standart : str | list[float] | list[tuple[float]] = "green"
@@ -61,7 +59,7 @@ def gradient_reflections(lidar_df : pd.DataFrame, contrast_cof : float = contras
 
 
 
-def shift_delt_t(delta_t : float = 0.06) -> pd.DataFrame:
+def shift_delt_t(radar_df : pd.DataFrame, delta_t : float = 0.06) -> pd.DataFrame:
     """
     Moves radar_df to delta_t in time
 
@@ -100,77 +98,95 @@ def shift_delt_t(delta_t : float = 0.06) -> pd.DataFrame:
     
     return radar_df
 
-
-def plot_generator(type_radar_lidar : {"radar", "lidar", "radar_lidar"}, frame_num : int, path_file : str, title_graph : str = None,
-                color_radar : str | list[float] | list[tuple[float]] = color_radar_standart, color_lidar : str | list[float] | list[tuple[float]] = None, 
-                figsize_ : tuple[int] = figsize_standart, x_lim : list[int] = x_lim_standart, y_lim :list[int] = y_lim_standart) -> None:
+def radar_normalize(radar_df : pd.DataFrame) -> pd.DataFrame:
     """
-    Saves a plt file in which the radar or lidar points (maybe both). 
-    The data is taken from processed data with the frame_num number and stored along the path_file path with the title_graph header. 
-    The color_radar color is selected for the radar, and the color_lidar color is selected for the lidar.
-    The dimensions of the graph figsize_ and the limits on the x and y axes are x_lim and y_lim.
+    leaves points whose likelihood is less than 0.7
 
     Parameters
     ----------
-    type_radar_lidar : {"radar", "lidar", "radar_lidar"}
-        Point type: radar, lidar, or both
-
-    frame_num : int
-        The frame number selected for building
-
-    path_file : str
-        The file path to save is calculated from the initial folder
+    radar_df : pd.DataFrame
         
-    title_graph : str = None
-        Title graph. Default is "Frame {title_graph}"
-    
-    color_radar : str | list[float] | list[tuple[float]] = color_radar_standart
-        The color of the radar in RGB. The default is color_radar_standart
-
-    color_lidar : str | list[float] | list[tuple[float]] = None
-        Lidar color. By default, gradient(frame_lidar)
-
-    figsize_ : tuple[int] = figsize_standart
-        The dimensions of the plt. Default figsize_standart
-
-    x_lim : list[int] = x_lim_standart
-        Dimensions on the x-axis. Default is x_lim_standart
-
-    y_lim :list[int] = y_lim_standart
-        Dimensions on the y-axis. Default is y_lim_standart
-
 
     Returns
     -------
-    None
-        Saves the file from the plt
+    pd.DataFrame
+        radar_df in which all points have a probability greater than 0.7
     """
+    return radar_df[radar_df["QPDH0"] < 0.3]
+
+
+
+
+# def plot_generator(frame_num : int, path_file : str, radar_path : str | None  = None, lidar_path : str | None = None, title_graph : str = None,
+#                 color_radar : str | list[float] | list[tuple[float]] = color_radar_standart, color_lidar : str | list[float] | list[tuple[float]] = None, 
+#                 figsize_ : tuple[int] = figsize_standart, x_lim : list[int] = x_lim_standart, y_lim :list[int] = y_lim_standart) -> None:
+#     """
+#     Saves a plt file in which the radar or lidar points (maybe both). 
+#     The data is taken from processed data with the frame_num number and stored along the path_file path with the title_graph header. 
+#     The color_radar color is selected for the radar, and the color_lidar color is selected for the lidar.
+#     The dimensions of the graph figsize_ and the limits on the x and y axes are x_lim and y_lim.
+
+#     Parameters
+#     ----------
+#     type_radar_lidar : {"radar", "lidar", "radar_lidar"}
+#         Point type: radar, lidar, or both
+
+#     frame_num : int
+#         The frame number selected for building
+
+#     path_file : str
+#         The file path to save is calculated from the initial folder
+        
+#     title_graph : str = None
+#         Title graph. Default is "Frame {title_graph}"
     
-    plt.figure(figsize = figsize_)
-    plt.xlim(x_lim)
-    plt.ylim(y_lim)
+#     color_radar : str | list[float] | list[tuple[float]] = color_radar_standart
+#         The color of the radar in RGB. The default is color_radar_standart
 
-    #radar
-    if(type_radar_lidar == "radar" or type_radar_lidar == "radar_lidar"):
-        frame_radar : pd.DataFrame = pd.read_csv(f"data/processed data/radar_data_{frame_num}.csv")
-        plt.scatter(frame_radar[frame_radar["QPDH0"] < 0.3]["X, (m)"], frame_radar[frame_radar["QPDH0"] < 0.3]["Y, (m)"], s=1, c = color_radar)
+#     color_lidar : str | list[float] | list[tuple[float]] = None
+#         Lidar color. By default, gradient(frame_lidar)
 
-    #lidar
-    if(type_radar_lidar == "lidar" or type_radar_lidar == "radar_lidar"):
-        frame_lidar : pd.DataFrame = pd.read_csv(f"data/processed data/lidar_data_{frame_num}.csv")
-        if(color_lidar is None):
-            plt.scatter(frame_lidar["X, (m)"], frame_lidar["Y, (m)"], s=1, c=gradient_reflections(frame_lidar))
-        else:
-            plt.scatter(frame_lidar["X, (m)"], frame_lidar["Y, (m)"], s=1, c=color_lidar)
+#     figsize_ : tuple[int] = figsize_standart
+#         The dimensions of the plt. Default figsize_standart
+
+#     x_lim : list[int] = x_lim_standart
+#         Dimensions on the x-axis. Default is x_lim_standart
+
+#     y_lim :list[int] = y_lim_standart
+#         Dimensions on the y-axis. Default is y_lim_standart
 
 
-    if title_graph is None:
-        plt.title(f"Frame {title_graph}")
-    else:
-        plt.title(title_graph)
+#     Returns
+#     -------
+#     None
+#         Saves the file from the plt
+#     """
+    
+#     plt.figure(figsize = figsize_)
+#     plt.xlim(x_lim)
+#     plt.ylim(y_lim)
+
+#     #radar
+#     if(not (radar_path is None)):
+#         frame_radar : pd.DataFrame = pd.read_csv(radar_path)
+#         plt.scatter(frame_radar[frame_radar["QPDH0"] < 0.3]["X, (m)"], frame_radar[frame_radar["QPDH0"] < 0.3]["Y, (m)"], s=1, c = color_radar)
+
+#     #lidar
+#     if(not (lidar_path is None)):
+#         frame_lidar : pd.DataFrame = pd.read_csv(f"data/processed data/lidar_data_{frame_num}.csv")
+#         if(color_lidar is None):
+#             plt.scatter(frame_lidar["X, (m)"], frame_lidar["Y, (m)"], s=1, c=gradient_reflections(frame_lidar))
+#         else:
+#             plt.scatter(frame_lidar["X, (m)"], frame_lidar["Y, (m)"], s=1, c=color_lidar)
+
+
+#     if title_graph is None:
+#         plt.title(f"Frame {title_graph}")
+#     else:
+#         plt.title(title_graph)
 
     
-    plt.savefig(path_file)
-    plt.close()
-    return None
+#     plt.savefig(path_file)
+#     plt.close()
+#     return None
 
