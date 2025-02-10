@@ -4,11 +4,6 @@ version = "0.1.0"
 description = "package for parsing raw radar/lidar data, coloring dots using different features, and plotting"
 authors = [
     {name = "ArtemK",email = "ubileyka19@gmail.com"}
-    {name = "kostyanbtw"}
-    {name = "vovaf709"}
-    {name = "cherrypy1"}
-    {name = "LitvinovDenis"}
-    {name = "artemiibakaev"}
 ]
 license = "LICENSE"
 readme = "README.md"
