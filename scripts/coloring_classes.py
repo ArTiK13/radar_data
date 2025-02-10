@@ -47,7 +47,7 @@ class colored_frame_all:
         self.name = color_name
 
     def draw(
-        self, s: float = 0.5, figsize: tuple[int, int] = (16, 10), lidar_draw=False
+        self, s: float = 0.5, figsize: tuple[int, int] = (16, 10), lidar_draw=False, show = True
     ) -> None:
         plt.figure(figsize=figsize)
         plt.title(self.name)
@@ -66,7 +66,12 @@ class colored_frame_all:
                 c=self._lidar_df["color"],
                 s=s,
             )
-        plt.show()
+        if show:
+            plt.show()
+    
+    def save(self, path: str) -> None:
+        plt.savefig(path)
+        plt.close()
 
 
 class Velocity_cololoring(colored_frame_all):
@@ -78,6 +83,64 @@ class Velocity_cololoring(colored_frame_all):
             pass  # красим лидар
 
 
-v7 = Velocity_cololoring(7, "velocity")
-v7.color()
-v7.draw()
+class radar_idx_cololoring(colored_frame_all):
+    def _filtering(self) -> pd.Series:
+        return self._radar_df["QPDH0"] > 0
+
+    def filtred(self) -> pd.DataFrame:
+        self._radar_df_filtered = self._radar_df[self._filtering]
+        return self._radar_df_filtered
+
+    def color(self, lidar_coloring=False) -> None:
+        radar_color = {
+            1: (1, 0, 0, 1),
+            2: (1, 0, 1, 1),
+            3: (0, 1, 0, 1),
+            4: (0, 1, 1, 1),
+            7: (0, 0, 1, 1),
+        }
+        self._radar_df["color"] = [
+            radar_color[self._radar_df["radar_idx"][i]]
+            for i in range(len(self._radar_df))
+        ]  # красим радар
+        if lidar_coloring:
+            pass  # красим лидар
+
+
+class QAmbigState_cololoring(colored_frame_all):
+    def _filtering(self) -> pd.Series:
+        return self._radar_df["HasQuality"] == 1.0
+
+    def filtred(self, change=True) -> pd.DataFrame:
+        if change:
+            self._radar_df = self._radar_df[self._filtering()].reset_index(drop=True)
+            return self._radar_df
+        else:
+            self._radar_df_filtered = self._radar_df[self._filtering()]
+            return self._radar_df_filtered
+
+    def color(self, lidar_coloring=False) -> None:
+        self.filtred()
+        QAmbigState_color = {
+            1.0: (1, 0, 0, 1),
+            2.0: (0, 1, 0, 1),
+            3.0: (0, 0, 1, 1),
+        }
+        self._radar_df["color"] = [
+            QAmbigState_color[self._radar_df["QAmbigState"][i]]
+            for i in range(len(self._radar_df))
+        ]  # красим радар
+
+        if lidar_coloring:
+            pass  # красим лидар
+
+
+# v7 = QAmbigState_cololoring(52, "QAmbigState")
+# v7.color()
+# v7.draw()
+
+for i in range(100):
+    v = QAmbigState_cololoring(i, 'QAmbSt')
+    v.color()
+    v.draw(show=False)
+    v.save(f'data/QAmbingState/frame_{i}.png')
