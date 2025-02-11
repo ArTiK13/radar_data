@@ -98,7 +98,11 @@ class test_cololoring(colored_frame_all):  # тестовая, показыва�
             (1, 0, 0.5, 1) for _ in range(len(self._radar_df))
         ]  # красим радар
         if lidar_coloring:
-            pass  # красим лидар
+            gradient = []
+            for i in range(len(self._lidar_df)):
+                color = (self._lidar_df["r, (reflectance)"][i] / 255) ** 0.3
+                gradient.append((color, 0, 1 - color, 0.021))
+            self._lidar_df["color"] = gradient
 
 
 class radar_idx_cololoring(
@@ -120,7 +124,11 @@ class radar_idx_cololoring(
             for i in range(len(self._radar_df))
         ]  # красим радар
         if lidar_coloring:
-            pass  # красим лидар
+            gradient = []
+            for i in range(len(self._lidar_df)):
+                color = (self._lidar_df["r, (reflectance)"][i] / 255) ** 0.3
+                gradient.append((color, 0, 1 - color, 0.021))
+            self._lidar_df["color"] = gradient
 
 
 class QAmbigState_cololoring(
@@ -142,7 +150,11 @@ class QAmbigState_cololoring(
         ]  # красим радар
 
         if lidar_coloring:
-            pass  # красим лидар
+            gradient = []
+            for i in range(len(self._lidar_df)):
+                color = (self._lidar_df["r, (reflectance)"][i] / 255) ** 0.3
+                gradient.append((color, 0, 1 - color, 0.021))
+            self._lidar_df["color"] = gradient
 
 
 class QVLongRMS_cololoring(
@@ -165,7 +177,11 @@ class QVLongRMS_cololoring(
         ]  # красим радар
 
         if lidar_coloring:
-            pass  # красим лидар
+            gradient = []
+            for i in range(len(self._lidar_df)):
+                color = (self._lidar_df["r, (reflectance)"][i] / 255) ** 0.3
+                gradient.append((color, 0, 1 - color, 0.021))
+            self._lidar_df["color"] = gradient
 
 
 class QDistLatRMS_cololoring(
@@ -195,7 +211,11 @@ class QDistLatRMS_cololoring(
         ]  # красим радар
 
         if lidar_coloring:
-            pass  # красим лидар
+            gradient = []
+            for i in range(len(self._lidar_df)):
+                color = (self._lidar_df["r, (reflectance)"][i] / 255) ** 0.3
+                gradient.append((color, 0, 1 - color, 0.021))
+            self._lidar_df["color"] = gradient
 
 
 class QDistLongRMS_cololoring(
@@ -225,10 +245,139 @@ class QDistLongRMS_cololoring(
         ]  # красим радар
 
         if lidar_coloring:
-            pass  # красим лидар
+            gradient = []
+            for i in range(len(self._lidar_df)):
+                color = (self._lidar_df["r, (reflectance)"][i] / 255) ** 0.3
+                gradient.append((color, 0, 1 - color, 0.021))
+            self._lidar_df["color"] = gradient
 
 
-v7 = QDistLongRMS_cololoring(76, "QDistLongRMS")
+class Range_cololoring(colored_frame_all):  # что это вообще.....
+    def _filtering(self) -> pd.Series:
+        return (self._radar_df["QAmbigState"] != 1.0) & (
+            self._radar_df["DistanceAccuracy"] < 0.2
+        )
+
+    def color(self, lidar_coloring=False) -> None:
+        self.filtred()
+        Range_cololor = {
+            1.0: (1, 0, 0, 1),
+            0.0: (0, 1, 0, 1),
+        }
+        self._radar_df["color"] = [
+            Range_cololor[self._radar_df["Range"][i]]
+            for i in range(len(self._radar_df))
+        ]  # красим радар
+
+        if lidar_coloring:
+            gradient = []
+            for i in range(len(self._lidar_df)):
+                color = (self._lidar_df["r, (reflectance)"][i] / 255) ** 0.3
+                gradient.append((color, 0, 1 - color, 0.021))
+            self._lidar_df["color"] = gradient
+
+
+class DistanceAccuracy_cololoring(colored_frame_all):  # +1 полезность, красные - мусор
+    def _filtering(self) -> pd.Series:
+        return self._radar_df["QAmbigState"] != 1.0
+
+    def color(self, lidar_coloring=False) -> None:
+        self.filtred()
+        DistanceAccuracy_cololor = {
+            True: (1, 0, 0, 0),
+            False: (0, 1, 0, 1),
+        }
+        self._radar_df["color"] = [
+            DistanceAccuracy_cololor[self._radar_df["DistanceAccuracy"][i] > 0.2]
+            for i in range(len(self._radar_df))
+        ]  # красим радар
+
+        if lidar_coloring:
+            gradient = []
+            for i in range(len(self._lidar_df)):
+                color = (self._lidar_df["r, (reflectance)"][i] / 255) ** 0.3
+                gradient.append((color, 0, 1 - color, 0.021))
+            self._lidar_df["color"] = gradient
+
+
+class AngleAccuracy_cololoring(
+    colored_frame_all
+):  # забавно показывает погрешности, но выбрасывать по нему нет смысла особо, все норм лежит
+    def _filtering(self) -> pd.Series:
+        return self._radar_df["QAmbigState"] != 1.0
+
+    def color(self, lidar_coloring=False) -> None:
+        # self.filtred()
+        colorer = lambda i: (
+            (0, 0, 1, 1)
+            if i > 0.08
+            else (
+                (0.01 ** (12.5 * i) - 1) / (-0.99),
+                1 - (0.01 ** (12.5 * i) - 1) / (-0.99),
+                0,
+                1,
+            )
+        )
+        self._radar_df["color"] = [
+            colorer(self._radar_df["AngleAccuracy"][i])
+            for i in range(len(self._radar_df))
+        ]  # красим радар
+
+        if lidar_coloring:
+            gradient = []
+            for i in range(len(self._lidar_df)):
+                color = (self._lidar_df["r, (reflectance)"][i] / 255) ** 0.3
+                gradient.append((color, 0, 1 - color, 0.021))
+            self._lidar_df["color"] = gradient
+
+
+class DynProp_cololoring(colored_frame_all):  # useless
+    def _filtering(self) -> pd.Series:
+        return (self._radar_df["HasQuality"] == 1.0) & (self._radar_df["QPDH0"] == 0.25)
+
+    def color(self, lidar_coloring=False) -> None:
+        # self.filtred()
+        colorer = lambda i: (
+            (0, 0, 1, 1) if i == 0.0 else ((1, 0, 0, 1) if i == 2.0 else (0, 1, 0, 1))
+        )
+        self._radar_df["color"] = [
+            colorer(self._radar_df["DynProp"][i]) for i in range(len(self._radar_df))
+        ]  # красим радар
+        if lidar_coloring:
+            gradient = []
+            for i in range(len(self._lidar_df)):
+                color = (self._lidar_df["r, (reflectance)"][i] / 255) ** 0.3
+                gradient.append((color, 0, 1 - color, 0.021))
+            self._lidar_df["color"] = gradient
+
+
+class RadarCrossSection_cololoring(colored_frame_all):  # ничего не дает
+    def _filtering(self) -> pd.Series:
+        return self._radar_df["QAmbigState"] != 1.0
+
+    def color(self, lidar_coloring=False) -> None:
+        self.filtred()
+        colorer = lambda i: (
+            1 / (1 + 2.718 ** (0.3 * (10 - i))),
+            1 - 1 / (1 + 2.718 ** (0.3 * (10 - i))),
+            0,
+            1,
+        )
+
+        self._radar_df["color"] = [
+            colorer(self._radar_df["RadarCrossSection"][i])
+            for i in range(len(self._radar_df))
+        ]  # красим радар
+
+        if lidar_coloring:
+            gradient = []
+            for i in range(len(self._lidar_df)):
+                color = (self._lidar_df["r, (reflectance)"][i] / 255) ** 0.3
+                gradient.append((color, 0, 1 - color, 0.021))
+            self._lidar_df["color"] = gradient
+
+
+v7 = RadarCrossSection_cololoring(52, "Range")
 v7.color()
 v7.draw()
 
