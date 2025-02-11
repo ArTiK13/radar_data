@@ -377,12 +377,55 @@ class RadarCrossSection_cololoring(colored_frame_all):  # ничего не да
             self._lidar_df["color"] = gradient
 
 
-v7 = RadarCrossSection_cololoring(52, "Range")
-v7.color()
-v7.draw()
+# v7 = RadarCrossSection_cololoring(52, "Range")
+# v7.color()
+# v7.draw()
 
-# for i in range(100):
+# for i in range(1):
 #     v = QAmbigState_cololoring(i, 'QAmbSt')
 #     v.color()
 #     v.draw(show=False)
 #     v.save(f'data/QAmbingState/frame_{i}.png')
+
+
+import cmd
+import os
+
+
+class FileManagerCLI(cmd.Cmd):
+    prompt = ">> "
+
+    def __init__(self):
+        super().__init__()
+        self.current_directory = os.getcwd()
+
+    def do_QDistLongRMS(self, line):
+        keys = line.split()
+        i = int(keys[-2])
+        v7 = QDistLongRMS_cololoring(i, "QDistLongRMS")
+        v7.color()
+        v7.draw()
+        v7.save(keys[-1])
+        print("Сохранено по адресу", keys[-1])
+
+    def do_QAmbingState(self, line):
+        keys = line.split()
+        i = int(keys[-2])
+        v7 = QAmbingState_cololoring(i, "QAmbingState")
+        v7.color()
+        v7.draw()
+        v7.save(keys[-1])
+        print("Сохранено по адресу", keys[-1])
+
+    
+
+    def do_quit(self, line):
+        return True
+
+    def postcmd(self, stop, line):
+        print()
+        return stop
+
+
+if __name__ == "__main__":
+    FileManagerCLI().cmdloop()
