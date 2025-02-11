@@ -49,6 +49,14 @@ class colored_frame_all:
         self._lidar_df = pd.read_csv(f"data/processed data/lidar_data_{i}.csv")
         self.name = color_name
 
+    def filtred(self, change=True, drop=True) -> pd.DataFrame:
+        if change:
+            self._radar_df = self._radar_df[self._filtering()].reset_index(drop=drop)
+            return self._radar_df
+        else:
+            self._radar_df_filtered = self._radar_df[self._filtering()]
+            return self._radar_df_filtered
+
     def draw(
         self,
         s: float = 0.5,
@@ -99,10 +107,6 @@ class radar_idx_cololoring(
     def _filtering(self) -> pd.Series:
         return self._radar_df["QPDH0"] > 0
 
-    def filtred(self) -> pd.DataFrame:
-        self._radar_df_filtered = self._radar_df[self._filtering]
-        return self._radar_df_filtered
-
     def color(self, lidar_coloring=False) -> None:
         radar_color = {
             1: (1, 0, 0, 1),
@@ -124,14 +128,6 @@ class QAmbigState_cololoring(
 ):  # ебать вообще какое полезное просто имба
     def _filtering(self) -> pd.Series:
         return (self._radar_df["HasQuality"] == 1.0) & (self._radar_df["QPDH0"] == 0.25)
-
-    def filtred(self, change=True) -> pd.DataFrame:
-        if change:
-            self._radar_df = self._radar_df[self._filtering()].reset_index(drop=True)
-            return self._radar_df
-        else:
-            self._radar_df_filtered = self._radar_df[self._filtering()]
-            return self._radar_df_filtered
 
     def color(self, lidar_coloring=False) -> None:
         self.filtred()
@@ -157,14 +153,6 @@ class QVLongRMS_cololoring(
             self._radar_df["HasQuality"] == 1.0
         )  # & (self._radar_df["QPDH0"] == 0.25)
 
-    def filtred(self, change=True) -> pd.DataFrame:
-        if change:
-            self._radar_df = self._radar_df[self._filtering()].reset_index(drop=True)
-            return self._radar_df
-        else:
-            self._radar_df_filtered = self._radar_df[self._filtering()]
-            return self._radar_df_filtered
-
     def color(self, lidar_coloring=False) -> None:
         self.filtred()
         # c_generator = lambda i: (((i-0.25)/2)**0.2, (1-(i-0.25)/2)**0.2, 0, 1)
@@ -187,14 +175,6 @@ class QDistLatRMS_cololoring(
         return (
             self._radar_df["HasQuality"] == 1.0
         )  # & (self._radar_df["QPDH0"] == 0.25)
-
-    def filtred(self, change=True) -> pd.DataFrame:
-        if change:
-            self._radar_df = self._radar_df[self._filtering()].reset_index(drop=True)
-            return self._radar_df
-        else:
-            self._radar_df_filtered = self._radar_df[self._filtering()]
-            return self._radar_df_filtered
 
     def color(self, lidar_coloring=False) -> None:
         self.filtred()
@@ -225,14 +205,6 @@ class QDistLongRMS_cololoring(
         return (
             self._radar_df["HasQuality"] == 1.0
         )  # & (self._radar_df["QPDH0"] == 0.25)
-
-    def filtred(self, change=True) -> pd.DataFrame:
-        if change:
-            self._radar_df = self._radar_df[self._filtering()].reset_index(drop=True)
-            return self._radar_df
-        else:
-            self._radar_df_filtered = self._radar_df[self._filtering()]
-            return self._radar_df_filtered
 
     def color(self, lidar_coloring=False) -> None:
         self.filtred()
