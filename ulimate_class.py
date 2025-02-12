@@ -12,7 +12,7 @@ class DataFilterError(KeyError):
     pass
 
 
-class ultimate_class:
+class UltimateClass:
     def __init__(self, i: int) -> None:
         self._radar_df = pd.read_csv(f"data/processed data/radar_data_{i}.csv")
         self._lidar_df = pd.read_csv(f"data/processed data/lidar_data_{i}.csv")
