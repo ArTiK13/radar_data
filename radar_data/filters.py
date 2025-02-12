@@ -10,7 +10,7 @@ class BaseFilter(ABC):
         pass
 
     @abstractmethod
-    def apply(self, scene: Scene) -> Scene:
+    def apply(self, scene: Scene, **kwargs) -> Scene:
         pass
 
 
@@ -74,9 +74,7 @@ class UltimateFilter(BaseFilter):
 
 
 class VelocityFilter(BaseFilter):
-    def apply(self, scene: Scene) -> Scene:
-        min_velocity = 2
-
+    def apply(self, scene: Scene, min_velocity: float = 2.0) -> Scene:
         radar_positions = {
             "1": [4.856, 1.29, 3.24],
             "2": [4.856, -1.29, 3.24],
@@ -84,6 +82,7 @@ class VelocityFilter(BaseFilter):
             "4": [5.103, -1.23, 3.23],
             "7": [5.139, 0.332, 0.635],
         }
+
         v_data = []
         for k, v in radar_positions.items():
             v_data.extend(
@@ -96,4 +95,40 @@ class VelocityFilter(BaseFilter):
                 ** 0.5
             )
         v_data = np.array(v_data)
+
         return scene[(np.abs(v_data) > min_velocity)]
+
+
+class DeltaTimeFix(BaseFilter):
+    def apply(self, scene: Scene, deltaT: float = 0.06) -> Scene:
+        radar_positions = {
+            "1": [4.856, 1.29, 3.24],
+            "2": [4.856, -1.29, 3.24],
+            "3": [5.103, 1.23, 3.23],
+            "4": [5.103, -1.23, 3.23],
+            "7": [5.139, 0.332, 0.635],
+        }
+
+        # вычитаем из координат точек координаты радара
+        for (
+            i,
+            cords,
+        ) in radar_positions.items():
+            for j, ax in enumerate(("X, (m)", "Y, (m)")):
+                scene.loc[scene["radar_idx"] == i, ax] -= cords[j]
+
+        # делаем пересчет координат с учетом временного сдвига
+        vector_length: pd.Series = (scene["X, (m)"] ** 2 + scene["Y, (m)"] ** 2) ** 0.5  # высчитываем точки радара
+        rad_del = (deltaT - scene["(radar_point_ts - lidar_ts), (s)"]) * scene["AbsoluteRadialVelocity"]
+        scene["X, (m)"] = scene["X, (m)"] * (vector_length + rad_del) / vector_length
+        scene["Y, (m)"] = scene["Y, (m)"] * (vector_length + rad_del) / vector_length
+
+        # прибавляем к координатам точек координаты радара
+        for (
+            i,
+            cords,
+        ) in radar_positions.items():
+            for j, ax in enumerate(("X, (m)", "Y, (m)")):
+                scene.loc[scene["radar_idx"] == i, ax] += cords[j]
+
+        return scene
