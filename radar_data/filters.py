@@ -20,6 +20,7 @@ class Compose(BaseFilter):
 
     Given (filter_1, filter_2, ..., fitler_n) applies them sequentially
     """
+
     def __init__(self, filters: Sequence[BaseFilter]):
         self.filters = filters
 
@@ -31,3 +32,42 @@ class Compose(BaseFilter):
 
 class IdentityFilter(BaseFilter):
     apply = lambda self, scene: scene
+
+
+class QAmbigStateFilter(BaseFilter):
+    def apply(self, scene: Scene) -> Scene:
+        return scene[(scene["HasQuality"] == 1.0) & (scene["QAmbigState"] != 1)]
+
+
+class DistanceAccuracyFilter(BaseFilter):
+    def apply(self, scene: Scene) -> Scene:
+        return scene[scene["DistanceAccuracy"] <= 0.2]
+
+
+class QDistLatRMSFilter(BaseFilter):
+    def apply(self, scene: Scene) -> Scene:
+        return scene[(scene["HasQuality"] == 1.0) & (scene["QDistLatRMS"] <= 2.16)]
+
+
+class QDistLongRMSFilter(BaseFilter):
+    def apply(self, scene: Scene) -> Scene:
+        return scene[(scene["HasQuality"] == 1.0) & (scene["QDistLongRMS"] <= 4.6)]
+
+
+class QPDH0Filter(BaseFilter):
+    def apply(self, scene: Scene) -> Scene:
+        return scene[(scene["HasQuality"] == 1.0) & (scene["QPDH0"] == 0.25)]
+
+
+class UltimateFilter(BaseFilter):
+    def apply(self, scene: Scene) -> Scene:
+        return scene[
+            (
+                (scene["HasQuality"] == 1.0)
+                & (scene["QAmbigState"] != 1)
+                & (scene["QDistLatRMS"] <= 2.16)
+                & (scene["QDistLongRMS"] <= 4.6)
+                & (scene["DistanceAccuracy"] <= 0.2)
+                & (scene["QPDH0"] == 0.25)
+            )
+        ]
