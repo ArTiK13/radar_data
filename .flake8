@@ -1,0 +1,8 @@
+[flake8]
+# Q000: double quotes
+ignore = Q000
+max-line-length = 120
+per-file-ignores =
+    tests/*,scripts/*:I251
+banned-modules =
+    radar_data.* = Use relative imports
