@@ -18,7 +18,8 @@ dependencies = [
     "seaborn (>=0.13.2,<0.14.0)",
     "black[jupyter] (>=25.1.0,<26.0.0)",
     "flake8 (>=7.1.1,<8.0.0)",
-    "scikit-learn (>=1.6.1,<2.0.0)"
+    "scikit-learn (>=1.6.1,<2.0.0)",
+    "pre-commit (>=4.1.0,<5.0.0)"
 ]
 
 
