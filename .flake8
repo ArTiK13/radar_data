@@ -6,3 +6,16 @@ per-file-ignores =
     tests/*,scripts/*:I251
 banned-modules =
     radar_data.* = Use relative imports
+exclude =
+    migrations
+    pycache
+    manage.py
+    settings.py
+    env
+    .env
+    ./env
+    env/
+    .env/
+    .venv/
+    .dvc/
+    .mypy_cache/
