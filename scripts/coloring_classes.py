@@ -1,44 +1,8 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-
-# наверное потом удалить, т.к. один фрейм не тяжелый и можно подругражуть сразу и лидар и радар
-
-# class colored_frame_radar:
-#     def __init__(self, i: int, color_name: str) -> None:
-#         self._radar_df = pd.read_csv(f"data/processed data/radar_data_{i}.csv")
-#         self.name = color_name
-
-#     def draw(self, s: float = 0.5, figsize: tuple[int, int] = (16, 10)) -> None:
-#         plt.figure(figsize=figsize)
-#         plt.title(self.name)
-#         plt.xlabel("OX, (m)")
-#         plt.ylabel("OY, (m)")
-#         plt.scatter(
-#             self._radar_df["X, (m)"],
-#             self._radar_df["Y, (m)"],
-#             c=self._radar_df["color"],
-#             s=s,
-#         )
-#         plt.show()
-
-
-# class colored_frame_lidar:
-#     def __init__(self, i: int, color_name: str) -> None:
-#         self._lidar_df = pd.read_csv(f"data/processed data/lidar_data_{i}.csv")
-#         self.name = color_name
-
-#     def draw(self, s: float = 0.5, figsize: tuple[int, int] = (16, 10)):
-#         plt.figure(figsize=figsize)
-#         plt.title(self.name)
-#         plt.xlabel("OX, (m)")
-#         plt.ylabel("OY, (m)")
-#         plt.scatter(
-#             self._lidar_df["X, (m)"],
-#             self._lidar_df["Y, (m)"],
-#             c=self._lidar_df["color"],
-#             s=s,
-#         )
+import cmd
+import os
 
 # parrent class
 
@@ -92,7 +56,8 @@ class colored_frame_all:
 # основные классы покрасок
 
 
-class test_cololoring(colored_frame_all):  # тестовая, показывает как красить
+# тестовая, показывает как красить
+class test_cololoring(colored_frame_all):
     def color(self, lidar_coloring=False) -> None:
         self._radar_df["color"] = [
             (1, 0, 0.5, 1) for _ in range(len(self._radar_df))
@@ -105,9 +70,8 @@ class test_cololoring(colored_frame_all):  # тестовая, показыва�
             self._lidar_df["color"] = gradient
 
 
-class radar_idx_cololoring(
-    colored_frame_all
-):  # покраска по радарам, пользы нет, визуально видно раздереление радаров
+# покраска по радарам, пользы нет, визуально видно раздереление радаров
+class radar_idx_cololoring(colored_frame_all):
     def _filtering(self) -> pd.Series:
         return self._radar_df["QPDH0"] > 0
 
@@ -131,9 +95,8 @@ class radar_idx_cololoring(
             self._lidar_df["color"] = gradient
 
 
-class QAmbigState_cololoring(
-    colored_frame_all
-):  # ебать вообще какое полезное просто имба
+# ебать вообще какое полезное просто имба
+class QAmbigState_cololoring(colored_frame_all):
     def _filtering(self) -> pd.Series:
         return (self._radar_df["HasQuality"] == 1.0) & (self._radar_df["QPDH0"] == 0.25)
 
@@ -157,9 +120,8 @@ class QAmbigState_cololoring(
             self._lidar_df["color"] = gradient
 
 
-class QVLongRMS_cololoring(
-    colored_frame_all
-):  ## бесполезно, т.к. убирает много хороших точек
+## бесполезно, т.к. убирает много хороших точек
+class QVLongRMS_cololoring(colored_frame_all):
     def _filtering(self) -> pd.Series:
         return (
             self._radar_df["HasQuality"] == 1.0
@@ -167,7 +129,6 @@ class QVLongRMS_cololoring(
 
     def color(self, lidar_coloring=False) -> None:
         self.filtred()
-        # c_generator = lambda i: (((i-0.25)/2)**0.2, (1-(i-0.25)/2)**0.2, 0, 1)
         c_generator = lambda i: (
             (1, 0, 0, 1) if i < 0.3 else ((0, 1, 0, 1) if i < 0.4 else (0, 0, 1, 1))
         )
@@ -184,9 +145,8 @@ class QVLongRMS_cololoring(
             self._lidar_df["color"] = gradient
 
 
-class QDistLatRMS_cololoring(
-    colored_frame_all
-):  # полезно, красные точки (самая большая погрешность), релаьно выбросы
+# полезно, красные точки (самая большая погрешность), релаьно выбросы
+class QDistLatRMS_cololoring(colored_frame_all):
     def _filtering(self) -> pd.Series:
         return (
             self._radar_df["HasQuality"] == 1.0
@@ -194,7 +154,6 @@ class QDistLatRMS_cololoring(
 
     def color(self, lidar_coloring=False) -> None:
         self.filtred()
-        # c_generator = lambda i: (((i-0.25)/2)**0.2, (1-(i-0.25)/2)**0.2, 0, 1)
         c_generator = lambda i: (
             (1, 0, 0, 1)
             if i > 2.16
@@ -218,9 +177,8 @@ class QDistLatRMS_cololoring(
             self._lidar_df["color"] = gradient
 
 
-class QDistLongRMS_cololoring(
-    colored_frame_all
-):  # аналогично красные выбросы, синие кайф, зеленые в целом норм
+# аналогично красные выбросы, синие кайф, зеленые в целом норм
+class QDistLongRMS_cololoring(colored_frame_all):
     def _filtering(self) -> pd.Series:
         return (
             self._radar_df["HasQuality"] == 1.0
@@ -228,7 +186,6 @@ class QDistLongRMS_cololoring(
 
     def color(self, lidar_coloring=False) -> None:
         self.filtred()
-        # c_generator = lambda i: (((i-0.25)/2)**0.2, (1-(i-0.25)/2)**0.2, 0, 1)
         c_generator = lambda i: (
             (1, 0, 0, 1)
             if i > 4.6
@@ -252,7 +209,8 @@ class QDistLongRMS_cololoring(
             self._lidar_df["color"] = gradient
 
 
-class Range_cololoring(colored_frame_all):  # что это вообще.....
+# что это вообще.....
+class Range_cololoring(colored_frame_all):
     def _filtering(self) -> pd.Series:
         return (self._radar_df["QAmbigState"] != 1.0) & (
             self._radar_df["DistanceAccuracy"] < 0.2
@@ -277,7 +235,8 @@ class Range_cololoring(colored_frame_all):  # что это вообще.....
             self._lidar_df["color"] = gradient
 
 
-class DistanceAccuracy_cololoring(colored_frame_all):  # +1 полезность, красные - мусор
+# +1 полезность, красные - мусор
+class DistanceAccuracy_cololoring(colored_frame_all):
     def _filtering(self) -> pd.Series:
         return self._radar_df["QAmbigState"] != 1.0
 
@@ -300,9 +259,8 @@ class DistanceAccuracy_cololoring(colored_frame_all):  # +1 полезность
             self._lidar_df["color"] = gradient
 
 
-class AngleAccuracy_cololoring(
-    colored_frame_all
-):  # забавно показывает погрешности, но выбрасывать по нему нет смысла особо, все норм лежит
+# забавно показывает погрешности, но выбрасывать по нему нет смысла особо, все норм лежит
+class AngleAccuracy_cololoring(colored_frame_all):
     def _filtering(self) -> pd.Series:
         return self._radar_df["QAmbigState"] != 1.0
 
@@ -331,7 +289,8 @@ class AngleAccuracy_cololoring(
             self._lidar_df["color"] = gradient
 
 
-class DynProp_cololoring(colored_frame_all):  # useless
+# useless
+class DynProp_cololoring(colored_frame_all):
     def _filtering(self) -> pd.Series:
         return (self._radar_df["HasQuality"] == 1.0) & (self._radar_df["QPDH0"] == 0.25)
 
@@ -351,7 +310,8 @@ class DynProp_cololoring(colored_frame_all):  # useless
             self._lidar_df["color"] = gradient
 
 
-class RadarCrossSection_cololoring(colored_frame_all):  # ничего не дает
+# ничего не дает
+class RadarCrossSection_cololoring(colored_frame_all):
     def _filtering(self) -> pd.Series:
         return self._radar_df["QAmbigState"] != 1.0
 
@@ -386,10 +346,6 @@ class RadarCrossSection_cololoring(colored_frame_all):  # ничего не да
 #     v.color()
 #     v.draw(show=False)
 #     v.save(f'data/QAmbingState/frame_{i}.png')
-
-
-import cmd
-import os
 
 
 class FileManagerCLI(cmd.Cmd):
@@ -444,7 +400,6 @@ class FileManagerCLI(cmd.Cmd):
         v7.save(keys[-1])
         print("Сохранено по адресу", keys[-1])
 
-
     # def do_QPDH0(self, line):
     #     keys = line.split()
     #     i = int(keys[-2])
@@ -453,7 +408,6 @@ class FileManagerCLI(cmd.Cmd):
     #     v7.draw()
     #     v7.save(keys[-1])
     #     print("Сохранено по адресу", keys[-1])
-
 
     # def do_HasQuality(self, line):
     #     keys = line.split()
@@ -464,16 +418,14 @@ class FileManagerCLI(cmd.Cmd):
     #     v7.save(keys[-1])
     #     print("Сохранено по адресу", keys[-1])
 
-
     def do_DynProp(self, line):
-            keys = line.split()
-            i = int(keys[-2])
-            v7 = DynProp_cololoring(i, "DynProp")
-            v7.color()
-            v7.draw()
-            v7.save(keys[-1])
-            print("Сохранено по адресу", keys[-1])
-    
+        keys = line.split()
+        i = int(keys[-2])
+        v7 = DynProp_cololoring(i, "DynProp")
+        v7.color()
+        v7.draw()
+        v7.save(keys[-1])
+        print("Сохранено по адресу", keys[-1])
 
     def do_AngleAccuracy(self, line):
         keys = line.split()
@@ -484,7 +436,6 @@ class FileManagerCLI(cmd.Cmd):
         v7.save(keys[-1])
         print("Сохранено по адресу", keys[-1])
 
-
     def do_DistanceAccuracy(self, line):
         keys = line.split()
         i = int(keys[-2])
@@ -494,7 +445,6 @@ class FileManagerCLI(cmd.Cmd):
         v7.save(keys[-1])
         print("Сохранено по адресу", keys[-1])
 
-    
     def do_Range(self, line):
         keys = line.split()
         i = int(keys[-2])
@@ -503,7 +453,6 @@ class FileManagerCLI(cmd.Cmd):
         v7.draw()
         v7.save(keys[-1])
         print("Сохранено по адресу", keys[-1])
-    
 
     # def do_RelativeLateralVelocity(self, line):
     #     keys = line.split()
@@ -514,7 +463,6 @@ class FileManagerCLI(cmd.Cmd):
     #     v7.save(keys[-1])
     #     print("Сохранено по адресу", keys[-1])
 
-
     def do_RadarCrossSection(self, line):
         keys = line.split()
         i = int(keys[-2])
@@ -523,7 +471,6 @@ class FileManagerCLI(cmd.Cmd):
         v7.draw()
         v7.save(keys[-1])
         print("Сохранено по адресу", keys[-1])
-    
 
     # def do_AbsoluteRadialVelocity(self, line):
     #     keys = line.split()
@@ -533,10 +480,6 @@ class FileManagerCLI(cmd.Cmd):
     #     v7.draw()
     #     v7.save(keys[-1])
     #     print("Сохранено по адресу", keys[-1])
-    
-
-
-    
 
     def do_quit(self, line):
         return True
