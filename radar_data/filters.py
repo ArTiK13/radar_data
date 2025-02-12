@@ -71,3 +71,29 @@ class UltimateFilter(BaseFilter):
                 & (scene["QPDH0"] == 0.25)
             )
         ]
+
+
+class VelocityFilter(BaseFilter):
+    def apply(self, scene: Scene) -> Scene:
+        min_velocity = 2
+
+        radar_positions = {
+            "1": [4.856, 1.29, 3.24],
+            "2": [4.856, -1.29, 3.24],
+            "3": [5.103, 1.23, 3.23],
+            "4": [5.103, -1.23, 3.23],
+            "7": [5.139, 0.332, 0.635],
+        }
+        v_data = []
+        for k, v in radar_positions.items():
+            v_data.extend(
+                scene[scene["radar_idx"] == k]["AbsoluteRadialVelocity"]
+                / (scene[scene["radar_idx"] == k]["X, (m)"] - v[0])
+                * (
+                    (scene[scene["radar_idx"] == k]["X, (m)"] - v[0]) ** 2
+                    + (scene[scene["radar_idx"] == k]["Y, (m)"] - v[1]) ** 2
+                )
+                ** 0.5
+            )
+        v_data = np.array(v_data)
+        return scene[(np.abs(v_data) > min_velocity)]
