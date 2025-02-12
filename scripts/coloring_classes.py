@@ -408,14 +408,133 @@ class FileManagerCLI(cmd.Cmd):
         v7.save(keys[-1])
         print("Сохранено по адресу", keys[-1])
 
-    def do_QAmbingState(self, line):
+    # def do_QAmbingState(self, line):
+    #     keys = line.split()
+    #     i = int(keys[-2])
+    #     v7 = QAmbingState_cololoring(i, "QAmbingState")
+    #     v7.color()
+    #     v7.draw()
+    #     v7.save(keys[-1])
+    #     print("Сохранено по адресу", keys[-1])
+
+    # def do_QInvalidState(self, line):
+    #     keys = line.split()
+    #     i = int(keys[-2])
+    #     v7 = QInvalidState_cololoring(i, "QInvalidState")
+    #     v7.color()
+    #     v7.draw()
+    #     v7.save(keys[-1])
+    #     print("Сохранено по адресу", keys[-1])
+
+    def do_QDistLatRMS(self, line):
         keys = line.split()
         i = int(keys[-2])
-        v7 = QAmbingState_cololoring(i, "QAmbingState")
+        v7 = QDistLatRMS_cololoring(i, "QDistLatRMS")
         v7.color()
         v7.draw()
         v7.save(keys[-1])
         print("Сохранено по адресу", keys[-1])
+
+    def do_QDistLongRMS(self, line):
+        keys = line.split()
+        i = int(keys[-2])
+        v7 = QDistLongRMS_cololoring(i, "QDistLongRMS")
+        v7.color()
+        v7.draw()
+        v7.save(keys[-1])
+        print("Сохранено по адресу", keys[-1])
+
+
+    # def do_QPDH0(self, line):
+    #     keys = line.split()
+    #     i = int(keys[-2])
+    #     v7 = QPDH0_cololoring(i, "QPDH0")
+    #     v7.color()
+    #     v7.draw()
+    #     v7.save(keys[-1])
+    #     print("Сохранено по адресу", keys[-1])
+
+
+    # def do_HasQuality(self, line):
+    #     keys = line.split()
+    #     i = int(keys[-2])
+    #     v7 = HasQuality_cololoring(i, "HasQuality")
+    #     v7.color()
+    #     v7.draw()
+    #     v7.save(keys[-1])
+    #     print("Сохранено по адресу", keys[-1])
+
+
+    def do_DynProp(self, line):
+            keys = line.split()
+            i = int(keys[-2])
+            v7 = DynProp_cololoring(i, "DynProp")
+            v7.color()
+            v7.draw()
+            v7.save(keys[-1])
+            print("Сохранено по адресу", keys[-1])
+    
+
+    def do_AngleAccuracy(self, line):
+        keys = line.split()
+        i = int(keys[-2])
+        v7 = AngleAccuracy_cololoring(i, "AngleAccuracy")
+        v7.color()
+        v7.draw()
+        v7.save(keys[-1])
+        print("Сохранено по адресу", keys[-1])
+
+
+    def do_DistanceAccuracy(self, line):
+        keys = line.split()
+        i = int(keys[-2])
+        v7 = DistanceAccuracy_cololoring(i, "DistanceAccuracy")
+        v7.color()
+        v7.draw()
+        v7.save(keys[-1])
+        print("Сохранено по адресу", keys[-1])
+
+    
+    def do_Range(self, line):
+        keys = line.split()
+        i = int(keys[-2])
+        v7 = Range_cololoring(i, "Range")
+        v7.color()
+        v7.draw()
+        v7.save(keys[-1])
+        print("Сохранено по адресу", keys[-1])
+    
+
+    # def do_RelativeLateralVelocity(self, line):
+    #     keys = line.split()
+    #     i = int(keys[-2])
+    #     v7 = RelativeLateralVelocity_cololoring(i, "RelativeLateralVelocity")
+    #     v7.color()
+    #     v7.draw()
+    #     v7.save(keys[-1])
+    #     print("Сохранено по адресу", keys[-1])
+
+
+    def do_RadarCrossSection(self, line):
+        keys = line.split()
+        i = int(keys[-2])
+        v7 = RadarCrossSection_cololoring(i, "RadarCrossSection")
+        v7.color()
+        v7.draw()
+        v7.save(keys[-1])
+        print("Сохранено по адресу", keys[-1])
+    
+
+    # def do_AbsoluteRadialVelocity(self, line):
+    #     keys = line.split()
+    #     i = int(keys[-2])
+    #     v7 = AbsoluteRadialVelocity_cololoring(i, "AbsoluteRadialVelocity")
+    #     v7.color()
+    #     v7.draw()
+    #     v7.save(keys[-1])
+    #     print("Сохранено по адресу", keys[-1])
+    
+
 
     
 
