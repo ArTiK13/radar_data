@@ -96,7 +96,7 @@ class radar_idx_cololoring(colored_frame_all):
 
 
 # ебать вообще какое полезное просто имба
-class QAmbigState_cololoring(colored_frame_all):
+class QAmbigStateCololoring(colored_frame_all):
     def _filtering(self) -> pd.Series:
         return (self._radar_df["HasQuality"] == 1.0) & (self._radar_df["QPDH0"] == 0.25)
 
@@ -121,7 +121,7 @@ class QAmbigState_cololoring(colored_frame_all):
 
 
 ## бесполезно, т.к. убирает много хороших точек
-class QVLongRMS_cololoring(colored_frame_all):
+class QVLongRMSCololoring(colored_frame_all):
     def _filtering(self) -> pd.Series:
         return (
             self._radar_df["HasQuality"] == 1.0
@@ -146,7 +146,7 @@ class QVLongRMS_cololoring(colored_frame_all):
 
 
 # полезно, красные точки (самая большая погрешность), релаьно выбросы
-class QDistLatRMS_cololoring(colored_frame_all):
+class QDistLatRMSCololoring(colored_frame_all):
     def _filtering(self) -> pd.Series:
         return (
             self._radar_df["HasQuality"] == 1.0
@@ -178,7 +178,7 @@ class QDistLatRMS_cololoring(colored_frame_all):
 
 
 # аналогично красные выбросы, синие кайф, зеленые в целом норм
-class QDistLongRMS_cololoring(colored_frame_all):
+class QDistLongRMSCololoring(colored_frame_all):
     def _filtering(self) -> pd.Series:
         return (
             self._radar_df["HasQuality"] == 1.0
@@ -210,7 +210,7 @@ class QDistLongRMS_cololoring(colored_frame_all):
 
 
 # что это вообще.....
-class Range_cololoring(colored_frame_all):
+class RangeCololoring(colored_frame_all):
     def _filtering(self) -> pd.Series:
         return (self._radar_df["QAmbigState"] != 1.0) & (
             self._radar_df["DistanceAccuracy"] < 0.2
@@ -236,7 +236,7 @@ class Range_cololoring(colored_frame_all):
 
 
 # +1 полезность, красные - мусор
-class DistanceAccuracy_cololoring(colored_frame_all):
+class DistanceAccuracyCololoring(colored_frame_all):
     def _filtering(self) -> pd.Series:
         return self._radar_df["QAmbigState"] != 1.0
 
@@ -260,7 +260,7 @@ class DistanceAccuracy_cololoring(colored_frame_all):
 
 
 # забавно показывает погрешности, но выбрасывать по нему нет смысла особо, все норм лежит
-class AngleAccuracy_cololoring(colored_frame_all):
+class AngleAccuracyCololoring(colored_frame_all):
     def _filtering(self) -> pd.Series:
         return self._radar_df["QAmbigState"] != 1.0
 
@@ -290,7 +290,7 @@ class AngleAccuracy_cololoring(colored_frame_all):
 
 
 # useless
-class DynProp_cololoring(colored_frame_all):
+class DynPropCololoring(colored_frame_all):
     def _filtering(self) -> pd.Series:
         return (self._radar_df["HasQuality"] == 1.0) & (self._radar_df["QPDH0"] == 0.25)
 
@@ -311,7 +311,7 @@ class DynProp_cololoring(colored_frame_all):
 
 
 # ничего не дает
-class RadarCrossSection_cololoring(colored_frame_all):
+class RadarCrossSectionCololoring(colored_frame_all):
     def _filtering(self) -> pd.Series:
         return self._radar_df["QAmbigState"] != 1.0
 
@@ -358,34 +358,16 @@ class FileManagerCLI(cmd.Cmd):
     def do_QDistLongRMS(self, line):
         keys = line.split()
         i = int(keys[-2])
-        v7 = QDistLongRMS_cololoring(i, "QDistLongRMS")
+        v7 = QDistLongRMSCololoring(i, "QDistLongRMS")
         v7.color()
         v7.draw()
         v7.save(keys[-1])
         print("Сохранено по адресу", keys[-1])
 
-    # def do_QAmbingState(self, line):
-    #     keys = line.split()
-    #     i = int(keys[-2])
-    #     v7 = QAmbingState_cololoring(i, "QAmbingState")
-    #     v7.color()
-    #     v7.draw()
-    #     v7.save(keys[-1])
-    #     print("Сохранено по адресу", keys[-1])
-
-    # def do_QInvalidState(self, line):
-    #     keys = line.split()
-    #     i = int(keys[-2])
-    #     v7 = QInvalidState_cololoring(i, "QInvalidState")
-    #     v7.color()
-    #     v7.draw()
-    #     v7.save(keys[-1])
-    #     print("Сохранено по адресу", keys[-1])
-
     def do_QDistLatRMS(self, line):
         keys = line.split()
         i = int(keys[-2])
-        v7 = QDistLatRMS_cololoring(i, "QDistLatRMS")
+        v7 = QDistLatRMSCololoring(i, "QDistLatRMS")
         v7.color()
         v7.draw()
         v7.save(keys[-1])
@@ -394,34 +376,16 @@ class FileManagerCLI(cmd.Cmd):
     def do_QDistLongRMS(self, line):
         keys = line.split()
         i = int(keys[-2])
-        v7 = QDistLongRMS_cololoring(i, "QDistLongRMS")
+        v7 = QDistLongRMSCololoring(i, "QDistLongRMS")
         v7.color()
         v7.draw()
         v7.save(keys[-1])
         print("Сохранено по адресу", keys[-1])
 
-    # def do_QPDH0(self, line):
-    #     keys = line.split()
-    #     i = int(keys[-2])
-    #     v7 = QPDH0_cololoring(i, "QPDH0")
-    #     v7.color()
-    #     v7.draw()
-    #     v7.save(keys[-1])
-    #     print("Сохранено по адресу", keys[-1])
-
-    # def do_HasQuality(self, line):
-    #     keys = line.split()
-    #     i = int(keys[-2])
-    #     v7 = HasQuality_cololoring(i, "HasQuality")
-    #     v7.color()
-    #     v7.draw()
-    #     v7.save(keys[-1])
-    #     print("Сохранено по адресу", keys[-1])
-
     def do_DynProp(self, line):
         keys = line.split()
         i = int(keys[-2])
-        v7 = DynProp_cololoring(i, "DynProp")
+        v7 = DynPropCololoring(i, "DynProp")
         v7.color()
         v7.draw()
         v7.save(keys[-1])
@@ -430,7 +394,7 @@ class FileManagerCLI(cmd.Cmd):
     def do_AngleAccuracy(self, line):
         keys = line.split()
         i = int(keys[-2])
-        v7 = AngleAccuracy_cololoring(i, "AngleAccuracy")
+        v7 = AngleAccuracyCololoring(i, "AngleAccuracy")
         v7.color()
         v7.draw()
         v7.save(keys[-1])
@@ -439,7 +403,7 @@ class FileManagerCLI(cmd.Cmd):
     def do_DistanceAccuracy(self, line):
         keys = line.split()
         i = int(keys[-2])
-        v7 = DistanceAccuracy_cololoring(i, "DistanceAccuracy")
+        v7 = DistanceAccuracyCololoring(i, "DistanceAccuracy")
         v7.color()
         v7.draw()
         v7.save(keys[-1])
@@ -448,38 +412,20 @@ class FileManagerCLI(cmd.Cmd):
     def do_Range(self, line):
         keys = line.split()
         i = int(keys[-2])
-        v7 = Range_cololoring(i, "Range")
+        v7 = RangeCololoring(i, "Range")
         v7.color()
         v7.draw()
         v7.save(keys[-1])
         print("Сохранено по адресу", keys[-1])
-
-    # def do_RelativeLateralVelocity(self, line):
-    #     keys = line.split()
-    #     i = int(keys[-2])
-    #     v7 = RelativeLateralVelocity_cololoring(i, "RelativeLateralVelocity")
-    #     v7.color()
-    #     v7.draw()
-    #     v7.save(keys[-1])
-    #     print("Сохранено по адресу", keys[-1])
 
     def do_RadarCrossSection(self, line):
         keys = line.split()
         i = int(keys[-2])
-        v7 = RadarCrossSection_cololoring(i, "RadarCrossSection")
+        v7 = RadarCrossSectionCololoring(i, "RadarCrossSection")
         v7.color()
         v7.draw()
         v7.save(keys[-1])
         print("Сохранено по адресу", keys[-1])
-
-    # def do_AbsoluteRadialVelocity(self, line):
-    #     keys = line.split()
-    #     i = int(keys[-2])
-    #     v7 = AbsoluteRadialVelocity_cololoring(i, "AbsoluteRadialVelocity")
-    #     v7.color()
-    #     v7.draw()
-    #     v7.save(keys[-1])
-    #     print("Сохранено по адресу", keys[-1])
 
     def do_quit(self, line):
         return True
