@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.cluster import DBSCAN
+import random
 
 from tqdm import tqdm
 import json
@@ -96,11 +97,12 @@ class UltimateClass:
         s: float = 3,
         lidar_s: float = 0.5,
         figsize: tuple[int, int] = (16, 10),
-        title: str = "Clusteraised RadarData",
+        title: str = None,
         lidar_draw=False,
         show: bool = False,
         path: str = None,
     ) -> pd.DataFrame:
+        title = title or f"Clustered RadarData (scene {self.scene_number})"
         path = (
             path
             or f"data/clusteraised/scene_{self.scene_number}({self.filter} filter applied).png"
@@ -150,13 +152,17 @@ class UltimateClass:
         colors = [
             plt.cm.Spectral(each) for each in np.linspace(0, 1, len(unique_labels))
         ]
+
+        random.seed(42)
+        random.shuffle(colors)
+
         road = max(Counter(db.labels_).items(), key=lambda x: x[1])[0]
 
         for k, col in zip(unique_labels, colors):
             if k == -1:
-                col = [0, 0, 0, 0.1]
+                col = [0, 0, 0, 0]
             elif k == road:
-                col = (col[0], col[1], col[2], 0.1)
+                col = (0.6, 0.6, 0.6, 1)
             class_member_mask = db.labels_ == k
             plt.scatter(
                 data[class_member_mask]["X, (m)"],
@@ -243,7 +249,7 @@ class UltimateClass:
             plt.close()
 
 
-for i in tqdm(range(100)):
-    frame = UltimateClass(i)
-    frame.filtred(6)
-    frame.clusterisation()
+# for i in tqdm(range(100)):
+#     frame = UltimateClass(i)
+#     frame.filtred(6)
+#     frame.clusterisation()
