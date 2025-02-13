@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "radar-data-tool"
-version = "0.1.0"
+version = "0.3.0"
 description = "CLI tool for processing radar and lidar data"
 authors = [
     {name = "xartik13", email = "ubileyka19@gmail.com"},

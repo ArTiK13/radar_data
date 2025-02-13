@@ -1,6 +1,6 @@
 Metadata-Version: 2.2
 Name: radar-data-tool
-Version: 0.1.0
+Version: 0.3.0
 Summary: CLI tool for processing radar and lidar data
 Author-email: xartik13 <ubileyka19@gmail.com>
 Project-URL: Homepage, https://github.com/ArTiK13/radar_data

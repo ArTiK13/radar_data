@@ -128,37 +128,6 @@ radar_idx""".split(
             radar_lidar_data_raw = json.load(file)
             lidar_df = pd.DataFrame(radar_lidar_data_raw["lidar"], columns=lidar_tags)
             radar_df = pd.DataFrame(radar_lidar_data_raw["radar"], columns=radar_tags)
-        radar_df["X_RAW, (m)"], radar_df["Y_RAW, (m)"] = (
-            radar_df["X, (m)"],
-            radar_df["Y, (m)"],
-        )
-        for (
-            i,
-            cords,
-        ) in radar_positions.items():  # вычитаем из координат точек координаты радара
-            for j, ax in enumerate(("X, (m)", "Y, (m)")):
-                radar_df.loc[radar_df["radar_idx"] == i, ax] -= cords[j]
-
-        vector_length: pd.Series = (
-            radar_df["X, (m)"] ** 2 + radar_df["Y, (m)"] ** 2
-        ) ** 0.5  # высчитываем точки радара
-        rad_del = (delta_t - radar_df["(radar_point_ts - lidar_ts), (s)"]) * radar_df[
-            "AbsoluteRadialVelocity"
-        ]
-        radar_df["X, (m)"] = (
-            radar_df["X, (m)"] * (vector_length + rad_del) / vector_length
-        )
-        radar_df["Y, (m)"] = (
-            radar_df["Y, (m)"] * (vector_length + rad_del) / vector_length
-        )
-
-        for (
-            i,
-            cords,
-        ) in radar_positions.items():  # добавляем к новым координатам корды радаров
-            for j, ax in enumerate(("X, (m)", "Y, (m)")):
-                radar_df.loc[radar_df["radar_idx"] == i, ax] += cords[j]
-
         radar_df.to_csv(f"data/processed data/radar_data_{jj}.csv", index=False)
         lidar_df.to_csv(f"data/processed data/lidar_data_{jj}.csv", index=False)
 
@@ -241,43 +210,8 @@ radar_idx""".split(
             radar_lidar_data_i = json.load(file)
             radar_lidar_data_raw["lidar"].extend(radar_lidar_data_i["lidar"])
             radar_lidar_data_raw["radar"].extend(radar_lidar_data_i["radar"])
-
     radar_df = pd.DataFrame(radar_lidar_data_raw["radar"], columns=radar_tags)
-
-    with open(
-        f"data/raw data/radar_positions.json", "r"
-    ) as file:  # считываем корды радара
-        radar_positions = {float(k): v for k, v in json.load(file).items()}
-
-    radar_df["X_RAW, (m)"], radar_df["Y_RAW, (m)"] = (
-        radar_df["X, (m)"],
-        radar_df["Y, (m)"],
-    )
-    for (
-        i,
-        cords,
-    ) in radar_positions.items():  # вычитаем из координат точек координаты радара
-        for j, ax in enumerate(("X, (m)", "Y, (m)")):
-            radar_df.loc[radar_df["radar_idx"] == i, ax] -= cords[j]
-
-    vector_length: pd.Series = (
-        radar_df["X, (m)"] ** 2 + radar_df["Y, (m)"] ** 2
-    ) ** 0.5  # высчитываем точки радара
-    rad_del = (delta_t - radar_df["(radar_point_ts - lidar_ts), (s)"]) * radar_df[
-        "AbsoluteRadialVelocity"
-    ]
-    radar_df["X, (m)"] = radar_df["X, (m)"] * (vector_length + rad_del) / vector_length
-    radar_df["Y, (m)"] = radar_df["Y, (m)"] * (vector_length + rad_del) / vector_length
-
-    for (
-        i,
-        cords,
-    ) in radar_positions.items():  # добавляем к новым координатам корды радаров
-        for j, ax in enumerate(("X, (m)", "Y, (m)")):
-            radar_df.loc[radar_df["radar_idx"] == i, ax] += cords[j]
-
     lidar_df = pd.DataFrame(radar_lidar_data_raw["lidar"], columns=lidar_tags)
-
     radar_df.to_csv("data/processed data/radar_data.csv", index=False)
     lidar_df.to_csv("data/processed data/lidar_data.csv", index=False)
 

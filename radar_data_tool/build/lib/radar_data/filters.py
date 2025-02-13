@@ -3,6 +3,9 @@ from typing import Sequence
 
 from .types import Scene
 
+import numpy as np
+from sklearn.cluster import DBSCAN
+
 
 class BaseFilter(ABC):
     def __init__(self):
@@ -69,6 +72,7 @@ class UltimateFilter(BaseFilter):
                 & (scene["QDistLongRMS"] <= 4.6)
                 & (scene["DistanceAccuracy"] <= 0.2)
                 & (scene["QPDH0"] == 0.25)
+                & (np.abs(scene["X, (m)"]) < 150)
             )
         ]
 
@@ -86,17 +90,17 @@ class VelocityFilter(BaseFilter):
         v_data = []
         for k, v in radar_positions.items():
             v_data.extend(
-                scene[scene["radar_idx"] == k]["AbsoluteRadialVelocity"]
-                / (scene[scene["radar_idx"] == k]["X, (m)"] - v[0])
+                scene[scene["radar_idx"] == int(k)]["AbsoluteRadialVelocity"]
+                / (scene[scene["radar_idx"] == int(k)]["X, (m)"] - v[0])
                 * (
-                    (scene[scene["radar_idx"] == k]["X, (m)"] - v[0]) ** 2
-                    + (scene[scene["radar_idx"] == k]["Y, (m)"] - v[1]) ** 2
+                    (scene[scene["radar_idx"] == int(k)]["X, (m)"] - v[0]) ** 2
+                    + (scene[scene["radar_idx"] == int(k)]["Y, (m)"] - v[1]) ** 2
                 )
                 ** 0.5
             )
         v_data = np.array(v_data)
 
-        return scene[(np.abs(v_data) > min_velocity)]
+        return scene[np.abs(v_data) > min_velocity]
 
 
 class DeltaTimeFix(BaseFilter):
@@ -136,3 +140,72 @@ class DeltaTimeFix(BaseFilter):
                 scene.loc[scene["radar_idx"] == i, ax] += cords[j]
 
         return scene
+
+
+class DeltaTimeFixPredict(BaseFilter):
+    def apply(self, scene: Scene, deltaT: float = 0.06) -> Scene:
+        radar_positions = {
+            "1": [4.856, 1.29, 3.24],
+            "2": [4.856, -1.29, 3.24],
+            "3": [5.103, 1.23, 3.23],
+            "4": [5.103, -1.23, 3.23],
+            "7": [5.139, 0.332, 0.635],
+        }
+
+        v_data = []
+        for k, v in radar_positions.items():
+            v_data.extend(
+                scene[scene["radar_idx"] == int(k)]["AbsoluteRadialVelocity"]
+                / (scene[scene["radar_idx"] == int(k)]["X, (m)"] - v[0])
+                * (
+                    (scene[scene["radar_idx"] == int(k)]["X, (m)"] - v[0]) ** 2
+                    + (scene[scene["radar_idx"] == int(k)]["Y, (m)"] - v[1]) ** 2
+                )
+                ** 0.5
+            )
+        v_data = np.array(v_data)
+
+        scene["X, (m)"] = (
+            scene["X, (m)"]
+            + (deltaT - scene["(radar_point_ts - lidar_ts), (s)"]) * v_data
+        )
+
+        return scene
+
+
+class ClusterisationFilter(BaseFilter):
+    def apply(self, scene: Scene, deltaT: float = 0.06) -> Scene:
+        radar_positions = {
+            "1": [4.856, 1.29, 3.24],
+            "2": [4.856, -1.29, 3.24],
+            "3": [5.103, 1.23, 3.23],
+            "4": [5.103, -1.23, 3.23],
+            "7": [5.139, 0.332, 0.635],
+        }
+
+        v_data = []
+        for k, v in radar_positions.items():
+            v_data.extend(
+                scene[scene["radar_idx"] == int(k)]["AbsoluteRadialVelocity"]
+                / (scene[scene["radar_idx"] == int(k)]["X, (m)"] - v[0])
+                * (
+                    (scene[scene["radar_idx"] == int(k)]["X, (m)"] - v[0]) ** 2
+                    + (scene[scene["radar_idx"] == int(k)]["Y, (m)"] - v[1]) ** 2
+                )
+                ** 0.5
+            )
+        v_data = np.array(v_data)
+
+        dots = np.array(
+            tuple(
+                zip(
+                    scene["X, (m)"] * (np.abs(v_data) > 1.5),
+                    scene["Y, (m)"] * (np.abs(v_data) > 1.5),
+                    v_data * 4,
+                )
+            )
+        )
+
+        db = DBSCAN(eps=3, min_samples=8).fit(dots)
+
+        return scene[db.labels_ != -1]
