@@ -170,7 +170,7 @@ class DeltaTimeFixPredict(BaseFilter):
             + (deltaT - scene["(radar_point_ts - lidar_ts), (s)"]) * v_data
         )
 
-        return scene
+        return scene[np.abs(scene["X, (m)"]) < 150]
 
 
 class ClusterisationFilter(BaseFilter):
