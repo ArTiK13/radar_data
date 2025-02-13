@@ -3,11 +3,12 @@ from argparse import ArgumentParser
 from importlib import import_module
 from pathlib import Path
 from typing import Optional
-from radar_data.parser import parsing_frame
-import radar_data.filters
+from .parser import parsing_frame
+from . import filters
 import json
 
-if __name__ == "__main__":
+
+def cli():
     parser = ArgumentParser()
 
     parser.add_argument("--input-scene", "-i", type=Path, required=True)  # json
@@ -39,3 +40,7 @@ if __name__ == "__main__":
     }
     with open(str(args.output_scene), "w") as file:
         json.dump(of, file)
+
+
+if __name__ == "__main__":
+    cli()

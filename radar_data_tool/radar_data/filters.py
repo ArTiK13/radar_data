@@ -118,8 +118,12 @@ class DeltaTimeFix(BaseFilter):
                 scene.loc[scene["radar_idx"] == i, ax] -= cords[j]
 
         # делаем пересчет координат с учетом временного сдвига
-        vector_length: pd.Series = (scene["X, (m)"] ** 2 + scene["Y, (m)"] ** 2) ** 0.5  # высчитываем точки радара
-        rad_del = (deltaT - scene["(radar_point_ts - lidar_ts), (s)"]) * scene["AbsoluteRadialVelocity"]
+        vector_length: pd.Series = (
+            scene["X, (m)"] ** 2 + scene["Y, (m)"] ** 2
+        ) ** 0.5  # высчитываем точки радара
+        rad_del = (deltaT - scene["(radar_point_ts - lidar_ts), (s)"]) * scene[
+            "AbsoluteRadialVelocity"
+        ]
         scene["X, (m)"] = scene["X, (m)"] * (vector_length + rad_del) / vector_length
         scene["Y, (m)"] = scene["Y, (m)"] * (vector_length + rad_del) / vector_length
 

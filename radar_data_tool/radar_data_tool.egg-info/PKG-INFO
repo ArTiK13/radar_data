@@ -1,0 +1,16 @@
+Metadata-Version: 2.2
+Name: radar-data-tool
+Version: 0.1.0
+Summary: CLI tool for processing radar and lidar data
+Author-email: xartik13 <ubileyka19@gmail.com>
+Project-URL: Homepage, https://github.com/ArTiK13/radar_data
+Keywords: radar,lidar,data-processing
+Requires-Python: >=3.10
+Requires-Dist: matplotlib<4.0.0,>=3.10.0
+Requires-Dist: numpy<3.0.0,>=2.2.2
+Requires-Dist: pandas<3.0.0,>=2.2.3
+Requires-Dist: tqdm<5.0.0,>=4.67.1
+Requires-Dist: plotly<7.0.0,>=6.0.0
+Requires-Dist: imageio<3.0.0,>=2.37.0
+Requires-Dist: seaborn<0.14.0,>=0.13.2
+Requires-Dist: scikit-learn<2.0.0,>=1.6.1

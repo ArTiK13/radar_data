@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "radar-data-tool"
+version = "0.1.0"
+description = "CLI tool for processing radar and lidar data"
+authors = [
+    {name = "xartik13", email = "ubileyka19@gmail.com"},
+]
+requires-python = ">=3.10"
+keywords = ["radar", "lidar", "data-processing"]
+
+dependencies = [
+    "matplotlib (>=3.10.0,<4.0.0)",
+    "numpy (>=2.2.2,<3.0.0)",
+    "pandas (>=2.2.3,<3.0.0)",
+    "tqdm (>=4.67.1,<5.0.0)",
+    "plotly (>=6.0.0,<7.0.0)",
+    "imageio (>=2.37.0,<3.0.0)",
+    "seaborn (>=0.13.2,<0.14.0)",
+    "scikit-learn (>=1.6.1,<2.0.0)"
+]
+
+[project.scripts]
+radar-tool = "radar_data.dummy:cli"
+
+[project.urls]
+Homepage = "https://github.com/ArTiK13/radar_data"
