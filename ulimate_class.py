@@ -7,6 +7,8 @@ from tqdm import tqdm
 import json
 from collections import Counter
 
+from scripts.filters import DeltaTimeFixPredict
+
 
 class DataFilterError(KeyError):
     pass
@@ -14,7 +16,9 @@ class DataFilterError(KeyError):
 
 class UltimateClass:
     def __init__(self, i: int) -> None:
-        self._radar_df = pd.read_csv(f"data/processed data/radar_data_{i}.csv")
+        self._radar_df = DeltaTimeFixPredict().apply(
+            pd.read_csv(f"data/processed data/radar_data_{i}.csv")
+        )
         self._lidar_df = pd.read_csv(f"data/processed data/lidar_data_{i}.csv")
         self._radar_df_filtered = self._radar_df
         self._radar_df_deleted = pd.DataFrame({"X, (m)": (), "Y, (m)": ()})
@@ -150,7 +154,7 @@ class UltimateClass:
 
         for k, col in zip(unique_labels, colors):
             if k == -1:
-                col = [0, 0, 0, 1]
+                col = [0, 0, 0, 0.1]
             elif k == road:
                 col = (col[0], col[1], col[2], 0.1)
             class_member_mask = db.labels_ == k
@@ -239,7 +243,7 @@ class UltimateClass:
             plt.close()
 
 
-# for i in tqdm(range(100)):
-#     frame = ultimate_class(i)
-#     frame.filtred(0)
-#     frame.draw()
+for i in tqdm(range(100)):
+    frame = UltimateClass(i)
+    frame.filtred(6)
+    frame.clusterisation()
