@@ -3,8 +3,8 @@ from argparse import ArgumentParser
 from importlib import import_module
 from pathlib import Path
 from typing import Optional
-from radar_data.parser import parsing_frame
-import radar_data.filters
+from scripts.parser import parsing_frame
+import scripts.filters
 import json
 
 if __name__ == "__main__":
@@ -19,7 +19,7 @@ if __name__ == "__main__":
 
     radar_df, lidar_df = parsing_frame(args.input_scene)
 
-    scene_filter = getattr(import_module("radar_data.filters"), args.filter)()
+    scene_filter = getattr(import_module("scripts.filters"), args.filter)()
     if args.filter_args:
         match args.filter:
             case "VelocityFilter":

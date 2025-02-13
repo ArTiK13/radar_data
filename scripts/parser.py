@@ -216,6 +216,6 @@ radar_idx""".split(
     lidar_df.to_csv("data/processed data/lidar_data.csv", index=False)
 
 
-# parsing_LEGACY()
-# parsing_frames()
-# parsing_frames_aio()
+parsing_LEGACY()
+parsing_frames()
+parsing_frames_aio()
